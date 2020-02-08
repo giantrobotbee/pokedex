@@ -1,0 +1,22 @@
+{
+  "name": "pokedex",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "ramda": "^0.27.0",
+    "swr": "^0.1.16"
+  },
+  "devDependencies": {
+    "next": "^9.2.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "author": "",
+  "license": "ISC"
+}
