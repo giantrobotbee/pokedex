@@ -3,7 +3,6 @@ import useSWR from "swr";
 import * as R from "ramda";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 import styles from "./app.module.css";
 
@@ -12,7 +11,20 @@ const PAGE_LIMIT = 10;
 
 async function fetcher(url) {
   const res = await fetch(url);
-  const json = await res.json();
+  const json = await res.json().then(async r => {
+    return await Promise.all(
+      R.map(async result => {
+        const nestedResult = await fetch(result.url);
+        return await nestedResult.json();
+      }, r.results),
+      { concurrency: 10 }
+    ).then(nested => {
+      r.results = nested;
+      return r;
+    });
+  });
+
+  console.log(json);
   return json;
 }
 
@@ -42,7 +54,8 @@ const Dex = ({ pokemon }) => {
 function HomePage() {
   const router = useRouter();
   const { pageNum } = router.query;
-  const path = `${API_URL}/pokemon?limit=${PAGE_LIMIT}&offset=${pageNum *
+  const page = pageNum ? Number(pageNum) : 1;
+  const path = `${API_URL}/pokemon?limit=${PAGE_LIMIT}&offset=${page *
     PAGE_LIMIT -
     10}`;
   const { data, error } = useSWR(path, fetcher);
